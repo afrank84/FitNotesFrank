@@ -88,6 +88,47 @@ function Get-BackMusclesInShape {
     $selectedExercises
 }
 
+Function Show-Menu {
+    param (
+        [string]$Title = 'Choose your workout routine:'
+    )
+    Clear-Host
+    Write-Host "================ $Title ================"
+
+    Write-Host "1: Get Back Muscles in Shape"
+    Write-Host "2: Get Lower Body in Shape"
+    Write-Host "3: Get Upper Body in Shape"
+    Write-Host "4: Get Cardio in Shape"
+    Write-Host "5: Exit"
+}
+
+do {
+    Show-Menu
+    $input = Read-Host "Please make a selection"
+    switch ($input) {
+        '1' {
+            Get-BackMusclesInShape
+        }
+        '2' {
+            Get-LowerBodyInShape
+        }
+        '3' {
+            Get-UpperBodyInShape
+        }
+        '4' {
+            Get-CardioInShape
+        }
+        '5' {
+            "Exiting program..."
+            break
+        }
+        default {
+            "Invalid choice. Please enter a number between 1-5."
+        }
+    }
+    pause
+} while ($input -ne '5')
+
 # To use the function, call it like this:
 # Get-BackMusclesInShape
 
