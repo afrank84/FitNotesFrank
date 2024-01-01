@@ -215,11 +215,11 @@ Function Show-Menu {
     Clear-Host
     Write-Host "================ $Title ================"
 
-    Write-Host "1: Get Back Muscles in Shape"
-    Write-Host "2: Get Lower Body in Shape"
-    Write-Host "3: Get Upper Body in Shape"
-    Write-Host "4: Get Cardio in Shape"
-    Write-Host "5: Exit"
+    Write-Host "1: Get Back Muscles in Shape" -ForegroundColor Green
+    Write-Host "2: Get Lower Body in Shape"   -ForegroundColor Green
+    Write-Host "3: Get Upper Body in Shape"   -ForegroundColor Green
+    Write-Host "4: Get Cardio in Shape"       -ForegroundColor Green
+    Write-Host "5: Exit"                      -ForegroundColor Red
 }
 
 do {
