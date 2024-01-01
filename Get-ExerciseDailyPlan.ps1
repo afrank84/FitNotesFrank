@@ -95,7 +95,6 @@ function Get-UpperBodyInShape {
     "Overhead Squat (Dumbells ID 36)", 
     "Dead Lift (Dumbells ID 37)", 
     "Goblet Squat (Dumbells ID 38)", 
-    "Single Leg Split Squat (Dumbells ID 46)", 
     "Wood Chop (Dumbells ID 1)", 
     "Plank T (Dumbells ID 2)", 
     "Swing (Dumbells ID 3)", 
