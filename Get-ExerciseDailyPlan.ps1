@@ -224,7 +224,7 @@ Function Show-Menu {
 
 do {
     Show-Menu
-    $input = Read-Host "Please make a selection" -ForegroundColor Yellow
+    $input = Read-Host "Please make a selection"
     switch ($input) {
         '1' {
             Get-BackMusclesInShape
@@ -239,11 +239,11 @@ do {
             Get-CardioInShape
         }
         '5' {
-            "Exiting program..." -ForegroundColor Red
+            "Exiting program..."d
             break
         }
         default {
-            "Invalid choice. Please enter a number between 1-5." -ForegroundColor Red
+            "Invalid choice. Please enter a number between 1-5."
         }
     }
     pause
