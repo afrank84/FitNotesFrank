@@ -239,7 +239,7 @@ do {
             Get-CardioInShape
         }
         '5' {
-            "Exiting program..."d
+            "Exiting program..."
             break
         }
         default {
