@@ -1,13 +1,27 @@
 function Get-CardioInShape {
     # Array of cardio exercises
     $exercises = @(
-        "High Knees", "Box Jumps", "Jumping Jacks", 
-        "Burpees", "Mountain Climbers", "Tuck Jumps", 
-        "Bear Crawl", "Step-Up", "Forward Bend", 
-        "Front Flash Back Leg Swing", "Squat", "Walking Lunge", 
-        "Spiderman", "Hip Raise", "Squatting Abductor", 
-        "Side Lung", "One Leg Dead Lift", "Calf Raises", 
-        "Plank T", "Swing", "Thruster"
+    "High Knees (Body Weight ID 3)", 
+    "Box Jumps (Body Weight ID 2)", 
+    "Jumping Jacks (Body Weight ID 4)", 
+    "Burpees (Body Weight ID 5)", 
+    "Mountain Climbers (Body Weight ID 6)", 
+    "Tuck Jumps (Body Weight ID 7)", 
+    "Bear Crawl (Dumbells ID 4)", 
+    "Step-Up (Body Weight ID 1)", 
+    "Forward Bend (Stretching ID 45)", 
+    "Front Flash Back Leg Swing (Stretching ID 44)", 
+    "Squat (Body Weight ID 39)", 
+    "Walking Lunge (Body Weight ID 40)", 
+    "Spiderman (Body Weight ID 8)", 
+    "Hip Raise (Body Weight ID 42)", 
+    "Squatting Abductor (Stretching ID 30)", 
+    "Side Lung (Stretching ID 31 / Body Weight ID 41)", 
+    "One Leg Dead Lift (Dumbells ID 40)", 
+    "Calf Raises (Dumbells ID 45)", 
+    "Plank T (Dumbells ID 2)", 
+    "Swing (Dumbells ID 3)", 
+    "Thruster (Dumbells ID 5)"
     )
 
     # Select and display 7 random exercises
