@@ -210,7 +210,7 @@ function Get-BackMusclesInShape {
 
 Function Show-Menu {
     param (
-        [string]$Title = 'Choose your workout routine:'
+        [string]$Title = 'Choose your workout routine:' -ForegroundColor Yellow
     )
     Clear-Host
     Write-Host "================ $Title ================"
@@ -224,7 +224,7 @@ Function Show-Menu {
 
 do {
     Show-Menu
-    $input = Read-Host "Please make a selection"
+    $input = Read-Host "Please make a selection" -ForegroundColor Yellow
     switch ($input) {
         '1' {
             Get-BackMusclesInShape
@@ -239,11 +239,11 @@ do {
             Get-CardioInShape
         }
         '5' {
-            "Exiting program..."
+            "Exiting program..." -ForegroundColor Red
             break
         }
         default {
-            "Invalid choice. Please enter a number between 1-5."
+            "Invalid choice. Please enter a number between 1-5." -ForegroundColor Red
         }
     }
     pause
