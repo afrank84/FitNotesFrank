@@ -181,12 +181,26 @@ function Get-LowerBodyInShape {
 function Get-BackMusclesInShape {
     # Array of back muscle exercises
     $exercises = @(
-        "Cat", "Cow", "Sphinx", "Child Pose", "Lat Hang", 
-        "Seated Torso Twist", "Lying Thoracic Rotation", "Superman", 
-        "Pull-Up", "Body Weight Row", "Dead Lift", 
-        "Good Morning", "Bent Over Row", "Reverse Fly", 
-        "One Arm Row", "Floor T Raise", "Swimmer", 
-        "Bear Crawl", "Renegade Row", "Back Bridge"
+    "Cat (Stretching ID 20)", 
+    "Cow (Stretching ID 21)", 
+    "Sphinx (Stretching ID 22)", 
+    "Child Pose (Stretching ID 33)", 
+    "Lat Hang (Stretching ID 16)", 
+    "Seated Torso Twist (Stretching ID 28)", 
+    "Lying Thoracic Rotation (Stretching ID 29)", 
+    "Superman (Body Weight ID 33)", 
+    "Pull-Up (Body Weight ID 11)", 
+    "Body Weight Row (Body Weight ID 34)", 
+    "Dead Lift (Dumbells ID 37)", 
+    "Good Morning (Body Weight ID 32)", 
+    "Bent Over Row (Dumbells ID 32)", 
+    "Reverse Fly (Dumbells ID 33)", 
+    "One Arm Row (Dumbells ID 34)", 
+    "Floor T Raise (Dumbells ID 35)", 
+    "Swimmer (Body Weight ID 37)", 
+    "Bear Crawl (Dumbells ID 4 / Body Weight ID 9)", 
+    "Renegade Row (Dumbells ID 31)", 
+    "Back Bridge (Body Weight ID 36)"
     )
 
     # Select and display 7 random exercises
