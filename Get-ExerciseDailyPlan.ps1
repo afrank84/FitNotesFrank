@@ -210,7 +210,7 @@ function Get-BackMusclesInShape {
 
 Function Show-Menu {
     param (
-        [string]$Title = 'Choose your workout routine:' -ForegroundColor Yellow
+        [string]$Title = 'Choose your workout routine:'
     )
     Clear-Host
     Write-Host "================ $Title ================"
@@ -224,7 +224,7 @@ Function Show-Menu {
 
 do {
     Show-Menu
-    $input = Read-Host "Please make a selection"
+    $input = Read-Host "Please make a selection" -ForegroundColor Yellow
     switch ($input) {
         '1' {
             Get-BackMusclesInShape
