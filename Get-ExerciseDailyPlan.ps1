@@ -224,7 +224,7 @@ Function Show-Menu {
 
 do {
     Show-Menu
-    $input = Read-Host "Please make a selection" -ForegroundColor Yellow
+    $input = Read-Host "Please make a selection"
     switch ($input) {
         '1' {
             Get-BackMusclesInShape
