@@ -18,10 +18,10 @@ function Show-Menu {
     Write-Host "================ Choose your workout routine: ================"
     $i = 1
     $ExerciseCategories.Keys | ForEach-Object {
-        Write-Host "$i: Get $_ in Shape" -ForegroundColor Green
+        Write-Host "${i}: Get $_ in Shape" -ForegroundColor Green
         $i++
     }
-    Write-Host "$i: Exit" -ForegroundColor Red
+    Write-Host "${i}: Exit" -ForegroundColor Red
     return $i
 }
 
