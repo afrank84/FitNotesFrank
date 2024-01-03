@@ -26,7 +26,9 @@ function Get-CardioInShape {
 
     # Select and display 7 random exercises
     $selectedExercises = Get-Random -InputObject $exercises -Count 7
+    Write-Host "--------------------------------------------" -ForegroundColor Yellow
     $selectedExercises
+    Write-Host "--------------------------------------------" -ForegroundColor Yellow
 }
 
 function Get-UpperBodyInShape {
@@ -106,7 +108,9 @@ function Get-UpperBodyInShape {
 
     # Select and display 7 random exercises
     $selectedExercises = Get-Random -InputObject $exercises -Count 7
+    Write-Host "--------------------------------------------" -ForegroundColor Yellow
     $selectedExercises
+    Write-Host "--------------------------------------------" -ForegroundColor Yellow
 }
 
 function Get-LowerBodyInShape {
@@ -175,7 +179,9 @@ function Get-LowerBodyInShape {
 
     # Select and display 7 random exercises
     $selectedExercises = Get-Random -InputObject $exercises -Count 7
+    Write-Host "--------------------------------------------" -ForegroundColor Yellow
     $selectedExercises
+    Write-Host "--------------------------------------------" -ForegroundColor Yellow
 }
 
 function Get-BackMusclesInShape {
@@ -205,7 +211,9 @@ function Get-BackMusclesInShape {
 
     # Select and display 7 random exercises
     $selectedExercises = Get-Random -InputObject $exercises -Count 7
+    Write-Host "--------------------------------------------" -ForegroundColor Yellow
     $selectedExercises
+    Write-Host "--------------------------------------------" -ForegroundColor Yellow
 }
 
 Function Show-Menu {
@@ -221,6 +229,8 @@ Function Show-Menu {
     Write-Host "4: Get Cardio in Shape"       -ForegroundColor Green
     Write-Host "5: Exit"                      -ForegroundColor Red
 }
+
+
 
 do {
     Show-Menu
@@ -239,25 +249,13 @@ do {
             Get-CardioInShape
         }
         '5' {
-            "Exiting program..."
+            Write-Host "Exiting program..." -ForegroundColor Red
             break
         }
         default {
-            "Invalid choice. Please enter a number between 1-5."
+            Write-Host "Invalid choice. Please enter a number between 1-5." -ForegroundColor Red
         }
     }
     pause
 } while ($input -ne '5')
 
-# To use the function, call it like this:
-# Get-BackMusclesInShape
-
-# To use the function, call it like this:
-# Get-LowerBodyInShape
-
-# To use the function, call it like this:
-# Get-UpperBodyInShape
-
-
-# To use the function, call it like this:
-# Get-CardioInShape
