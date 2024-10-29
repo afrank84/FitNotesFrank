@@ -166,27 +166,27 @@
             return date.toLocaleDateString('en-US', options);
         }
 
+
+
+        
         function addMonthLabels() {
             const monthLabels = document.getElementById('monthLabels');
             monthLabels.innerHTML = ''; // Clear existing labels
             const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
             
-            // Fixed for 2024
-            const startDate = new Date('2024-01-01');
-            const endDate = new Date('2024-12-31');
+            // Start from January 1st, 2024
+            const year = 2024;
             
-            let currentMonth = -1;
-            for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 7)) {
-                const month = d.getMonth();
-                if (month !== currentMonth) {
-                    const label = document.createElement('div');
-                    label.textContent = months[month];
-                    const weekNum = Math.ceil((d - startDate) / (1000 * 60 * 60 * 24 * 7));
-                    label.style.gridColumn = weekNum + 1;
-                    monthLabels.appendChild(label);
-                    currentMonth = month;
-                }
-            }
+            // Add a label for each month
+            months.forEach((month, index) => {
+                const label = document.createElement('div');
+                label.textContent = month;
+                // Calculate the column based on month position
+                // Each month should take approximately 4.3 weeks (52 weeks / 12 months)
+                const column = Math.floor(index * 4.3) + 1;
+                label.style.gridColumn = column;
+                monthLabels.appendChild(label);
+            });
         }
 
         async function initializeGraph() {
