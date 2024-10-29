@@ -110,6 +110,26 @@
     </div>
 
     <script>
+        function addMonthLabels() {
+            const monthLabels = document.getElementById('monthLabels');
+            monthLabels.innerHTML = '';
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            
+            // Determine position for first day of each month
+            months.forEach((month, index) => {
+                const label = document.createElement('div');
+                label.textContent = month;
+                
+                // Calculate which week column this month should start in
+                const firstOfMonth = new Date(2024, index, 1);
+                const startOfYear = new Date(2024, 0, 1);
+                const weekNum = Math.floor((firstOfMonth - startOfYear) / (7 * 24 * 60 * 60 * 1000));
+                
+                label.style.gridColumn = weekNum + 1;
+                monthLabels.appendChild(label);
+            });
+        }
+
         async function getWorkoutData() {
             try {
                 const response = await fetch('FitNotes_Export_2024_10_29_15_21_10.csv');
@@ -118,7 +138,7 @@
                 }
                 const csvText = await response.text();
                 
-                const lines = csvText.split('\n').slice(1); // Skip header
+                const lines = csvText.split('\n').slice(1);
                 const workoutDays = {};
                 
                 lines.forEach(line => {
@@ -129,17 +149,21 @@
                         }
                     }
                 });
-                
-                // Set fixed date range for 2024
-                const startDate = new Date('2024-01-01');
-                const endDate = new Date('2024-12-31');
-                
+
+                const startDate = new Date(2024, 0, 1); // January 1, 2024
+                const endDate = new Date(2024, 11, 31); // December 31, 2024
                 const contributions = [];
-                for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+                
+                // Ensure we start on the first Sunday to align grid
+                const firstSunday = new Date(startDate);
+                firstSunday.setDate(firstSunday.getDate() - firstSunday.getDay());
+
+                for (let d = new Date(firstSunday); d <= endDate; d.setDate(d.getDate() + 1)) {
                     const dateStr = d.toISOString().split('T')[0];
+                    const inRange = d >= startDate && d <= endDate;
                     contributions.push({
                         date: new Date(d),
-                        count: workoutDays[dateStr] || 0
+                        count: inRange ? (workoutDays[dateStr] || 0) : null
                     });
                 }
                 
@@ -154,6 +178,7 @@
         }
 
         function getColor(count) {
+            if (count === null) return 'transparent'; // For days outside our range
             if (count === 0) return '#ebedf0';
             if (count <= 3) return '#9be9a8';
             if (count <= 6) return '#40c463';
@@ -166,33 +191,10 @@
             return date.toLocaleDateString('en-US', options);
         }
 
-
-
-        
-        function addMonthLabels() {
-            const monthLabels = document.getElementById('monthLabels');
-            monthLabels.innerHTML = ''; // Clear existing labels
-            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-            
-            // Start from January 1st, 2024
-            const year = 2024;
-            
-            // Add a label for each month
-            months.forEach((month, index) => {
-                const label = document.createElement('div');
-                label.textContent = month;
-                // Calculate the column based on month position
-                // Each month should take approximately 4.3 weeks (52 weeks / 12 months)
-                const column = Math.floor(index * 4.3) + 1;
-                label.style.gridColumn = column;
-                monthLabels.appendChild(label);
-            });
-        }
-
         async function initializeGraph() {
             const contributions = await getWorkoutData();
             const graph = document.getElementById('graph');
-            graph.innerHTML = ''; // Clear existing squares
+            graph.innerHTML = '';
             const tooltip = document.getElementById('tooltip');
 
             addMonthLabels();
@@ -202,18 +204,20 @@
                 square.className = 'square';
                 square.style.backgroundColor = getColor(contribution.count);
                 
-                square.addEventListener('mouseover', (e) => {
-                    const rect = square.getBoundingClientRect();
-                    tooltip.style.display = 'block';
-                    tooltip.style.left = `${rect.left}px`;
-                    tooltip.style.top = `${rect.top - 40}px`;
-                    const exerciseText = contribution.count === 1 ? 'exercise' : 'exercises';
-                    tooltip.textContent = `${contribution.count} ${exerciseText} on ${formatDate(contribution.date)}`;
-                });
-                
-                square.addEventListener('mouseout', () => {
-                    tooltip.style.display = 'none';
-                });
+                if (contribution.count !== null) { // Only add hover effects for days in 2024
+                    square.addEventListener('mouseover', (e) => {
+                        const rect = square.getBoundingClientRect();
+                        tooltip.style.display = 'block';
+                        tooltip.style.left = `${rect.left}px`;
+                        tooltip.style.top = `${rect.top - 40}px`;
+                        const exerciseText = contribution.count === 1 ? 'exercise' : 'exercises';
+                        tooltip.textContent = `${contribution.count} ${exerciseText} on ${formatDate(contribution.date)}`;
+                    });
+                    
+                    square.addEventListener('mouseout', () => {
+                        tooltip.style.display = 'none';
+                    });
+                }
                 
                 graph.appendChild(square);
             });
