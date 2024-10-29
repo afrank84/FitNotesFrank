@@ -102,18 +102,24 @@
         let frequencyChart = null;
         let cardioChart = null;
 
-        // Function to parse time string (MM:SS) to minutes
+        // Function to parse time string (MM:SS) to total minutes
         function parseTime(timeStr) {
             if (!timeStr) return 0;
             const [minutes, seconds] = timeStr.split(':').map(Number);
             return minutes + seconds/60;
         }
-
-        // Function to format minutes as MM:SS
-        function formatTime(minutes) {
-            const mins = Math.floor(minutes);
-            const secs = Math.round((minutes - mins) * 60);
-            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        
+        // Function to format total minutes into HH:MM:SS or MM:SS as appropriate
+        function formatTime(totalMinutes) {
+            const hours = Math.floor(totalMinutes / 60);
+            const minutes = Math.floor(totalMinutes % 60);
+            const seconds = Math.round((totalMinutes % 1) * 60);
+            
+            if (hours > 0) {
+                return `${hours}h ${minutes}m`;
+            } else {
+                return `${minutes}m ${seconds}s`;
+            }
         }
 
         function processData(data) {
