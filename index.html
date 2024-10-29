@@ -1,1 +1,202 @@
-It's alive!
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workout Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.min.css" rel="stylesheet">
+    <style>
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-4">
+        <h1 class="text-center mb-4">Workout Analytics Dashboard</h1>
+
+        <!-- File Input -->
+        <div class="mb-4">
+            <input type="file" class="form-control" id="csvFile" accept=".csv">
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <h5>Total Workouts</h5>
+                    <h2 id="totalWorkouts">-</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <h5>Total Exercises</h5>
+                    <h2 id="totalExercises">-</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <h5>Categories</h5>
+                    <h2 id="totalCategories">-</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <h5>Most Common Category</h5>
+                    <h2 id="commonCategory">-</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Exercise Categories Distribution</h5>
+                        <div class="chart-container">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Weekly Workout Frequency</h5>
+                        <div class="chart-container">
+                            <canvas id="frequencyChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+
+    <script>
+        let categoryChart = null;
+        let frequencyChart = null;
+
+        // Parse CSV data
+        function parseCSV(csv) {
+            const lines = csv.split('\n');
+            const headers = lines[0].split(',');
+            return lines.slice(1).filter(line => line.trim()).map(line => {
+                const values = line.split(',');
+                const row = {};
+                headers.forEach((header, i) => {
+                    row[header.trim()] = values[i];
+                });
+                return row;
+            });
+        }
+
+        function processData(data) {
+            // Calculate statistics
+            const uniqueWorkoutDates = new Set(data.map(row => row.Date)).size;
+            const totalExercises = data.length;
+            const categories = [...new Set(data.map(row => row.Category))];
+            const categoryCount = {};
+            data.forEach(row => {
+                categoryCount[row.Category] = (categoryCount[row.Category] || 0) + 1;
+            });
+            const mostCommonCategory = Object.entries(categoryCount)
+                .sort((a, b) => b[1] - a[1])[0][0];
+
+            // Update summary statistics
+            document.getElementById('totalWorkouts').textContent = uniqueWorkoutDates;
+            document.getElementById('totalExercises').textContent = totalExercises;
+            document.getElementById('totalCategories').textContent = categories.length;
+            document.getElementById('commonCategory').textContent = mostCommonCategory;
+
+            // Destroy existing charts if they exist
+            if (categoryChart) categoryChart.destroy();
+            if (frequencyChart) frequencyChart.destroy();
+
+            // Create category distribution chart
+            const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+            categoryChart = new Chart(categoryCtx, {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(categoryCount),
+                    datasets: [{
+                        data: Object.values(categoryCount),
+                        backgroundColor: [
+                            '#FF6384',
+                            '#36A2EB',
+                            '#FFCE56',
+                            '#4BC0C0',
+                            '#9966FF'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            // Calculate weekly frequency
+            const weeklyFrequency = {};
+            data.forEach(row => {
+                const date = new Date(row.Date);
+                const week = `${date.getFullYear()}-W${Math.ceil((date.getDate() + date.getDay()) / 7)}`;
+                weeklyFrequency[week] = (weeklyFrequency[week] || 0) + 1;
+            });
+
+            // Create frequency chart
+            const frequencyCtx = document.getElementById('frequencyChart').getContext('2d');
+            frequencyChart = new Chart(frequencyCtx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(weeklyFrequency),
+                    datasets: [{
+                        label: 'Exercises per Week',
+                        data: Object.values(weeklyFrequency),
+                        backgroundColor: '#36A2EB'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Handle file input
+        document.getElementById('csvFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(event) {
+                const csvData = event.target.result;
+                const data = parseCSV(csvData);
+                processData(data);
+            };
+            
+            reader.readAsText(file);
+        });
+    </script>
+</body>
+</html>
