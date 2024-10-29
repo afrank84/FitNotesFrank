@@ -28,11 +28,6 @@
     <div class="container py-4">
         <h1 class="text-center mb-4">Workout Analytics Dashboard</h1>
 
-        <!-- File Input -->
-        <div class="mb-4">
-            <input type="file" class="form-control" id="csvFile" accept=".csv">
-        </div>
-
         <div class="row mb-4">
             <div class="col-md-3">
                 <div class="stat-card">
@@ -42,20 +37,20 @@
             </div>
             <div class="col-md-3">
                 <div class="stat-card">
-                    <h5>Total Exercises</h5>
-                    <h2 id="totalExercises">-</h2>
+                    <h5>Total Distance</h5>
+                    <h2 id="totalDistance">-</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <h5>Total Time</h5>
+                    <h2 id="totalTime">-</h2>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="stat-card">
                     <h5>Categories</h5>
                     <h2 id="totalCategories">-</h2>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <h5>Most Common Category</h5>
-                    <h2 id="commonCategory">-</h2>
                 </div>
             </div>
         </div>
@@ -82,6 +77,19 @@
                 </div>
             </div>
         </div>
+
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Cardio Progress</h5>
+                        <div class="chart-container">
+                            <canvas id="cardioChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Bootstrap Bundle with Popper -->
@@ -92,58 +100,54 @@
     <script>
         let categoryChart = null;
         let frequencyChart = null;
+        let cardioChart = null;
 
-        // Parse CSV data
-        function parseCSV(csv) {
-            const lines = csv.split('\n');
-            const headers = lines[0].split(',');
-            return lines.slice(1).filter(line => line.trim()).map(line => {
-                const values = line.split(',');
-                const row = {};
-                headers.forEach((header, i) => {
-                    row[header.trim()] = values[i];
-                });
-                return row;
-            });
+        // Function to parse time string (MM:SS) to minutes
+        function parseTime(timeStr) {
+            if (!timeStr) return 0;
+            const [minutes, seconds] = timeStr.split(':').map(Number);
+            return minutes + seconds/60;
+        }
+
+        // Function to format minutes as MM:SS
+        function formatTime(minutes) {
+            const mins = Math.floor(minutes);
+            const secs = Math.round((minutes - mins) * 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
         }
 
         function processData(data) {
             // Calculate statistics
             const uniqueWorkoutDates = new Set(data.map(row => row.Date)).size;
-            const totalExercises = data.length;
             const categories = [...new Set(data.map(row => row.Category))];
+            
+            // Calculate cardio totals
+            const cardioWorkouts = data.filter(row => row.Distance && row.Time);
+            const totalDistance = cardioWorkouts.reduce((sum, row) => sum + parseFloat(row.Distance || 0), 0);
+            const totalTime = cardioWorkouts.reduce((sum, row) => sum + parseTime(row.Time), 0);
+
+            // Update summary statistics
+            document.getElementById('totalWorkouts').textContent = uniqueWorkoutDates;
+            document.getElementById('totalDistance').textContent = `${totalDistance.toFixed(1)} miles`;
+            document.getElementById('totalTime').textContent = formatTime(totalTime);
+            document.getElementById('totalCategories').textContent = categories.length;
+
+            // Category distribution
             const categoryCount = {};
             data.forEach(row => {
                 categoryCount[row.Category] = (categoryCount[row.Category] || 0) + 1;
             });
-            const mostCommonCategory = Object.entries(categoryCount)
-                .sort((a, b) => b[1] - a[1])[0][0];
 
-            // Update summary statistics
-            document.getElementById('totalWorkouts').textContent = uniqueWorkoutDates;
-            document.getElementById('totalExercises').textContent = totalExercises;
-            document.getElementById('totalCategories').textContent = categories.length;
-            document.getElementById('commonCategory').textContent = mostCommonCategory;
-
-            // Destroy existing charts if they exist
-            if (categoryChart) categoryChart.destroy();
-            if (frequencyChart) frequencyChart.destroy();
-
-            // Create category distribution chart
+            // Create category chart
             const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+            if (categoryChart) categoryChart.destroy();
             categoryChart = new Chart(categoryCtx, {
                 type: 'pie',
                 data: {
                     labels: Object.keys(categoryCount),
                     datasets: [{
                         data: Object.values(categoryCount),
-                        backgroundColor: [
-                            '#FF6384',
-                            '#36A2EB',
-                            '#FFCE56',
-                            '#4BC0C0',
-                            '#9966FF'
-                        ]
+                        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF']
                     }]
                 },
                 options: {
@@ -152,7 +156,7 @@
                 }
             });
 
-            // Calculate weekly frequency
+            // Weekly frequency
             const weeklyFrequency = {};
             data.forEach(row => {
                 const date = new Date(row.Date);
@@ -162,6 +166,7 @@
 
             // Create frequency chart
             const frequencyCtx = document.getElementById('frequencyChart').getContext('2d');
+            if (frequencyChart) frequencyChart.destroy();
             frequencyChart = new Chart(frequencyCtx, {
                 type: 'bar',
                 data: {
@@ -182,21 +187,75 @@
                     }
                 }
             });
+
+            // Process cardio data
+            const cardioData = cardioWorkouts.map(row => ({
+                date: row.Date,
+                distance: parseFloat(row.Distance),
+                time: parseTime(row.Time),
+                pace: parseTime(row.Time) / parseFloat(row.Distance)
+            })).sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            // Create cardio progress chart
+            const cardioCtx = document.getElementById('cardioChart').getContext('2d');
+            if (cardioChart) cardioChart.destroy();
+            cardioChart = new Chart(cardioCtx, {
+                type: 'line',
+                data: {
+                    labels: cardioData.map(d => d.date),
+                    datasets: [{
+                        label: 'Distance (miles)',
+                        data: cardioData.map(d => d.distance),
+                        borderColor: '#FF6384',
+                        yAxisID: 'y'
+                    }, {
+                        label: 'Time (minutes)',
+                        data: cardioData.map(d => d.time),
+                        borderColor: '#36A2EB',
+                        yAxisID: 'y1'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            grid: {
+                                drawOnChartArea: false
+                            }
+                        }
+                    }
+                }
+            });
         }
 
-        // Handle file input
-        document.getElementById('csvFile').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            const reader = new FileReader();
-            
-            reader.onload = function(event) {
-                const csvData = event.target.result;
-                const data = parseCSV(csvData);
+        // Fetch and process the CSV file
+        fetch('FitNotes_Export_2024_10_29_15_21_10.csv')
+            .then(response => response.text())
+            .then(csvText => {
+                const lines = csvText.split('\n');
+                const headers = lines[0].split(',');
+                const data = lines.slice(1)
+                    .filter(line => line.trim())
+                    .map(line => {
+                        const values = line.split(',');
+                        const row = {};
+                        headers.forEach((header, i) => {
+                            row[header.trim()] = values[i];
+                        });
+                        return row;
+                    });
                 processData(data);
-            };
-            
-            reader.readAsText(file);
-        });
+            })
+            .catch(error => console.error('Error loading the CSV file:', error));
     </script>
 </body>
 </html>
