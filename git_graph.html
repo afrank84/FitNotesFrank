@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Workout Activity Graph</title>
+    <title>2024 Workout Activity Graph</title>
     <style>
         .container {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
@@ -83,7 +83,7 @@
 </head>
 <body>
     <div class="container">
-        <h2>Workout Activity</h2>
+        <h2>2024 Workout Activity</h2>
         <div id="error" class="error-message"></div>
         <div class="month-labels" id="monthLabels"></div>
         <div class="graph" id="graph"></div>
@@ -130,12 +130,12 @@
                     }
                 });
                 
-                const contributions = [];
-                const today = new Date();
-                const startDate = new Date(today);
-                startDate.setDate(startDate.getDate() - 364);
+                // Set fixed date range for 2024
+                const startDate = new Date('2024-01-01');
+                const endDate = new Date('2024-12-31');
                 
-                for (let d = new Date(startDate); d <= today; d.setDate(d.getDate() + 1)) {
+                const contributions = [];
+                for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
                     const dateStr = d.toISOString().split('T')[0];
                     contributions.push({
                         date: new Date(d),
@@ -168,19 +168,21 @@
 
         function addMonthLabels() {
             const monthLabels = document.getElementById('monthLabels');
+            monthLabels.innerHTML = ''; // Clear existing labels
             const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-            const today = new Date();
-            const startDate = new Date(today);
-            startDate.setDate(startDate.getDate() - 364);
+            
+            // Fixed for 2024
+            const startDate = new Date('2024-01-01');
+            const endDate = new Date('2024-12-31');
             
             let currentMonth = -1;
-            
-            for (let d = new Date(startDate); d <= today; d.setDate(d.getDate() + 7)) {
+            for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 7)) {
                 const month = d.getMonth();
                 if (month !== currentMonth) {
                     const label = document.createElement('div');
                     label.textContent = months[month];
-                    label.style.gridColumn = Math.ceil((d - startDate) / (1000 * 60 * 60 * 24 * 7));
+                    const weekNum = Math.ceil((d - startDate) / (1000 * 60 * 60 * 24 * 7));
+                    label.style.gridColumn = weekNum + 1;
                     monthLabels.appendChild(label);
                     currentMonth = month;
                 }
@@ -190,6 +192,7 @@
         async function initializeGraph() {
             const contributions = await getWorkoutData();
             const graph = document.getElementById('graph');
+            graph.innerHTML = ''; // Clear existing squares
             const tooltip = document.getElementById('tooltip');
 
             addMonthLabels();
